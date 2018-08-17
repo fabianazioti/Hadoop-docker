@@ -1,70 +1,60 @@
 # sudo docker build --tag fzioti/hadoop:3.1.1 .
+# sudo docker network create --driver=bridge hadoop
+
+# get into hadoop master container
+#sudo docker exec -it hadoop-master bash
 
 FROM ubuntu:16.04
 
+WORKDIR /root
+
 RUN apt-get update
-RUN apt-get install -y --reinstall build-essential
-RUN apt-get install -y ssh
+#RUN apt-get install -y ssh
+RUN apt-get install -y openssh-server
+RUN apt-get install -y wget
 RUN apt-get install -y rsync
 RUN apt-get install -y vim
 RUN apt-get install -y net-tools
 RUN apt-get install -y openjdk-8-jdk
-RUN apt-get install -y python2.7-dev
-RUN apt-get install -y libxml2-dev
-RUN apt-get install -y libkrb5-dev
-RUN apt-get install -y libffi-dev
-RUN apt-get install -y libssl-dev
-RUN apt-get install -y libldap2-dev
-RUN apt-get install -y python-lxml
-RUN apt-get install -y libxslt1-dev
-RUN apt-get install -y libgmp3-dev
-RUN apt-get install -y libsasl2-dev
-RUN apt-get install -y libsqlite3-dev
-RUN apt-get install -y libmysqlclient-dev
 
-# set JAVA_HOME
+# set environment variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
-ENV PATH $PATH:$JAVA_HOME/bin
+ENV HADOOP_HOME=/usr/local/hadoop
+ENV PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
 
-# passwordless ssh
-RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa
-RUN cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
-RUN chmod 0600 ~/.ssh/authorized_keys
+# ssh without key
+RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && \
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
-RUN echo "Port 2122" >> /etc/ssh/sshd_config
+# Download and install Hadoop
+RUN wget http://ftp.unicamp.br/pub/apache/hadoop/common/hadoop-3.1.1/hadoop-3.1.1.tar.gz && \
+    tar -xzvf hadoop-3.1.1.tar.gz && \
+    mv hadoop-3.1.1 /usr/local/hadoop && \
+    rm hadoop-3.1.1.tar.gz
 
-# Download Hadoop 
-RUN wget -O hadoop.tar.gz http://ftp.unicamp.br/pub/apache/hadoop/common/hadoop-3.1.1/hadoop-3.1.1.tar.gz && \
-tar -xzf hadoop.tar.gz -C /usr/local/ && rm hadoop.tar.gz
+RUN mkdir -p ~/hdfs/namenode && \
+    mkdir -p ~/hdfs/datanode
 
-# create a soft link to make it transparent when upgrade Hadoop
-RUN ln -s /usr/local/hadoop-2.7.4 /usr/local/hadoop
+RUN mkdir $HADOOP_HOME/logs
 
-# set Hadoop enviroments
-ENV HADOOP_HOME /usr/local/hadoop
-ENV PATH $PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+COPY config/* /tmp/
 
-ENV HADOOP_PREFIX $HADOOP_HOME
-ENV HADOOP_COMMON_HOME $HADOOP_HOME
-ENV HADOOP_HDFS_HOME $HADOOP_HOME
-ENV HADOOP_MAPRED_HOME $HADOOP_HOME
-ENV HADOOP_YARN_HOME $HADOOP_HOME
-ENV HADOOP_CONF_DIR $HADOOP_HOME/etc/hadoop
-ENV YARN_CONF_DIR $HADOOP_PREFIX/etc/hadoop
+RUN mv /tmp/ssh_config ~/.ssh/config && \
+    mv /tmp/hadoop-env.sh /usr/local/hadoop/etc/hadoop/hadoop-env.sh && \
+    mv /tmp/hdfs-site.xml $HADOOP_HOME/etc/hadoop/hdfs-site.xml && \
+    mv /tmp/core-site.xml $HADOOP_HOME/etc/hadoop/core-site.xml && \
+    mv /tmp/mapred-site.xml $HADOOP_HOME/etc/hadoop/mapred-site.xml && \
+    mv /tmp/yarn-site.xml $HADOOP_HOME/etc/hadoop/yarn-site.xml && \
+    mv /tmp/slaves $HADOOP_HOME/etc/hadoop/slaves && \
+    mv /tmp/start-hadoop.sh ~/start-hadoop.sh && \
+    mv /tmp/run-wordcount.sh ~/run-wordcount.sh
 
-# add default config files which has one master and three slaves
-ADD configs/*xml $HADOOP_HOME/etc/hadoop/
-ADD configs/slaves $HADOOP_HOME/etc/hadoop/slaves
+RUN chmod +x ~/start-hadoop.sh && \
+    chmod +x ~/run-wordcount.sh && \
+    chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
+    chmod +x $HADOOP_HOME/sbin/start-yarn.sh
 
-# copy ssh config
-ADD configs/ssh_config /root/.ssh/config
+# format namenode
+RUN /usr/local/hadoop/bin/hdfs namenode -format
 
-# update JAVA_HOME and HADOOP_CONF_DIR in hadoop-env.sh
-RUN echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
-    echo "export HADOOP_CONF_DIR=$HADOOP_PREFIX/etc/hadoop/" >> $HADOOP_PREFIX/etc/hadoop/hadoop-env.sh && \
-    echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
-
-ADD bootstrap.sh /etc/bootstrap.sh
-
-CMD bash /etc/bootstrap.sh
-
+CMD [ "sh", "-c", "service ssh start; bash"]
