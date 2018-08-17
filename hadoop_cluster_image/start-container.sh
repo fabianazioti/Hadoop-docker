@@ -12,7 +12,7 @@ sudo docker run -itd \
                 fzioti/hadoop:3.1.1 &> /dev/null
 
 # start hadoop slave1 container
-sudo docker rm -f hadoop-slave$i &> /dev/null
+sudo docker rm -f hadoop-slave1 &> /dev/null
 echo "start hadoop-slave1 container..."
 sudo docker run -itd \
                 --net=hadoop \

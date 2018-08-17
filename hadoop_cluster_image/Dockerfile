@@ -16,6 +16,8 @@ RUN apt-get install -y rsync
 RUN apt-get install -y vim
 RUN apt-get install -y net-tools
 RUN apt-get install -y openjdk-8-jdk
+RUN apt-get install -y nano
+RUN apt-get install -y install ant
 
 # set environment variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
