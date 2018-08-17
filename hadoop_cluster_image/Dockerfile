@@ -17,7 +17,7 @@ RUN apt-get install -y vim
 RUN apt-get install -y net-tools
 RUN apt-get install -y openjdk-8-jdk
 RUN apt-get install -y nano
-RUN apt-get install -y install ant
+RUN apt-get install -y ant
 
 # set environment variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
