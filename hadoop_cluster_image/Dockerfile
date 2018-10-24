@@ -54,6 +54,7 @@ RUN mkdir -p ~/hdfs/namenode && \
 #     echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
 
 # ssh without key
+RUN rm ~/.ssh/id_rsa
 RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
