@@ -89,7 +89,7 @@ RUN chmod +x ~/start-hadoop.sh && \
 # format namenode
 RUN /usr/local/hadoop/bin/hdfs namenode -format
 
-EXPOSE 9870
-EXPOSE 8088
+# expose various ports
+EXPOSE 8088 9870 9864 19888 8042 8888
 
 CMD [ "sh", "-c", "service ssh start; bash"]
