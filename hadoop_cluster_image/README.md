@@ -39,8 +39,26 @@ OK!! Now you can..
   stop-all.sh
   start-all.sh
   ```
-- Usage examples (from spatialhadoop)
-  ```sh
-  shadoop generate test mbr:0,0,1000000,1000000 size:1.gb shape:rect
-  hadoop fs -ls
-  ```
+
+### Usage examples (from spatialhadoop wiki)
+To generate a 1 GB file that contains rectangles, run the command
+
+```sh
+shadoop generate test.rects size:1.gb shape:rect mbr:0,0,1000000,1000000
+```
+
+Build a grid index over the generated file
+
+```sh
+shadoop index test.rects sindex:grid test.grid shape:rect
+```
+
+Run a range query that selects rectangles overlapping the query area defined by the box with the two corners (10, 20) and (2000, 3000). Results are stored in the output file rangequery.out
+
+```sh
+shadoop rangequery test.grid rect:10,10,2000,3000 rangequery.out shape:rect
+```
+
+```sh
+hadoop fs -ls
+```
