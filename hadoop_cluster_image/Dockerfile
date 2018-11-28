@@ -18,6 +18,7 @@ RUN apt-get install -y net-tools
 RUN apt-get install -y openjdk-8-jdk
 RUN apt-get install -y nano
 RUN apt-get install -y ant
+RUN apt-get install -y apt-utils
 
 # set environment variable
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
@@ -51,7 +52,7 @@ RUN mkdir -p ~/hdfs/namenode && \
 #     echo "export HDFS_SECONDARYNAMENODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
 #     echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/yarn-env.sh && \
 #     echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/yarn-env.sh && \
-#     echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
+#RUN     echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
 
 # ssh without key
 RUN rm ~/.ssh/id_rsa
