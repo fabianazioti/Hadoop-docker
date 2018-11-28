@@ -2,6 +2,7 @@
 
 #!/bin/bash
 
+#verificar as pastas corretas de instalacao
 mkdir -p ~/pig/
 
 cd pig
