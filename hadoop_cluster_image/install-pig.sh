@@ -3,6 +3,8 @@
 #!/bin/bash
 
 #verificar as pastas corretas de instalacao
+
+#https://blog.knoldus.com/apache-pig-installation-and-connect-with-hadoop-cluster/
 mkdir -p ~/pig/
 
 cd pig
