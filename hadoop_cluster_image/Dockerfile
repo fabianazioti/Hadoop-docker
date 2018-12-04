@@ -1,15 +1,8 @@
-# sudo docker build --tag fzioti/hadoop:3.1.1 .
-# sudo docker network create --driver=bridge hadoop
-
-# get into hadoop master container
-#sudo docker exec -it hadoop-master bash
-
 FROM ubuntu:16.04
 
 WORKDIR /root
 
 RUN apt-get update
-#RUN apt-get install -y ssh
 RUN apt-get install -y openssh-server
 RUN apt-get install -y wget
 RUN apt-get install -y rsync
@@ -21,7 +14,7 @@ RUN apt-get install -y ant
 RUN apt-get install -y apt-utils
 
 # set environment variable
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV HADOOP_HOME=/usr/local/hadoop
 ENV PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin
 
@@ -38,21 +31,7 @@ RUN wget https://www.apache.org/dist/hadoop/core/hadoop-3.1.1/hadoop-3.1.1.tar.g
 RUN mkdir -p ~/hdfs/namenode && \
     mkdir -p ~/hdfs/datanode && \
     mkdir $HADOOP_HOME/logs
-    
-# RUN for user in hadoop hdfs yarn mapred hue; do \
-#          useradd -U -M -d /opt/hadoop/ --shell /bin/bash ${user}; \
-#     done && \
-#     for user in root hdfs yarn mapred hue; do \
-#         usermod -G hadoop ${user}; \
-#     done && \
-#     echo "export JAVA_HOME=$JAVA_HOME" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
-#     echo "export HDFS_DATANODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
-#     echo "export HDFS_DATANODE_SECURE_USER=hdfs" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
-#     echo "export HDFS_NAMENODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
-#     echo "export HDFS_SECONDARYNAMENODE_USER=root" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh && \
-#     echo "export YARN_RESOURCEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/yarn-env.sh && \
-#     echo "export YARN_NODEMANAGER_USER=root" >> $HADOOP_HOME/etc/hadoop/yarn-env.sh && \
-#RUN     echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
+ 
 
 # ssh without key
 RUN rm ~/.ssh/id_rsa
@@ -86,6 +65,17 @@ RUN chmod +x ~/start-hadoop.sh && \
     chmod +x ~/run-wordcount.sh && \
     chmod +x $HADOOP_HOME/sbin/start-dfs.sh && \
     chmod +x $HADOOP_HOME/sbin/start-yarn.sh
+
+RUN echo "JAVA_HOME=$JAVA_HOME" >> ~/.bashrc && \
+    echo "HADOOP_HOME=$HADOOP_HOME" >> ~/.bashrc && \
+    echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc && \
+    echo "PATH=$PATH:$HADOOP_HOME/sbin" >> ~/.bashrc && \
+    echo "HADOOP_MAPRED_HOME=$HADOOP_HOME" >> ~/.bashrc && \
+    echo "HADOOP_COMMON_HOME=$HADOOP_HOME" >> ~/.bashrc && \
+    echo "HADOOP_HDFS_HOME=$HADOOP_HOME" >> ~/.bashrc && \
+    echo "YARN_HOME=$HADOOP_HOME" >> ~/.bashrc && \
+    echo "HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native" >> ~/.bashrc &&\
+    echo "HADOOP_OPTS= "-Djava.library.path=$HADOOP_HOME/lib"" >> ~/.bashrc
 
 # format namenode
 RUN /usr/local/hadoop/bin/hdfs namenode -format
