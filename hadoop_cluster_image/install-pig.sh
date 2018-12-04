@@ -1,13 +1,8 @@
-# Install PIG
-
 #!/bin/bash
 
-#verificar as pastas corretas de instalacao
+mkdir -p /usr/lib/pig/
 
-#https://blog.knoldus.com/apache-pig-installation-and-connect-with-hadoop-cluster/
-mkdir -p ~/pig/
-
-cd pig
+cd /usr/lib/pig/
 
 wget http://www-us.apache.org/dist/pig/pig-0.16.0/pig-0.16.0.tar.gz
 
@@ -17,19 +12,19 @@ rm pig-0.16.0.tar.gz
 
 # arquivo .bashrc add variaveis
 
-nano ~/.bashrc
+#nano ~/.bashrc
 
-export PIG_HOME="/root/pig/pig-0.16.0"
-export PIG_CONF_DIR="$PIG_HOME/conf"
-export PIG_CLASSPATH="$PIG_CONF_DIR"
-export PATH="$PIG_HOME/bin:$PATH"
+#export PIG_HOME="/usr/lib/pig/pig-0.16.0"
+#export PIG_CONF_DIR="$PIG_HOME/conf"
+#export PIG_CLASSPATH="$PIG_CONF_DIR"
+#export PATH="$PIG_HOME/bin:$PATH"
 
-source .bashrc
+# source ~/.bashrc
 
-RUN     echo "PATH=$PATH:$HADOOP_HOME/bin" >> ~/.bashrc
-
-
-echo "PIG_HOME=$PIG_HOME:/root/pig/pig-0.16.0" >> ~/.bashrc
+echo "PIG_HOME=$PIG_HOME:/usr/lib/pig/pig-0.16.0" >> ~/.bashrc
 echo "PIG_CONF_DIR=$PIG_CONF_DIR:$PIG_HOME/conf" >> ~/.bashrc
 echo "PIG_CLASSPATH=$PIG_CLASSPATH:$PIG_CONF_DIR" >> ~/.bashrc
-echo "PATH=$PATH:$PIG_HOME/bin:$PATH" >> ~/.bashrc
+echo "PATH="$PIG_HOME/bin:$PATH" >> ~/.bashrc
+
+
+# lembrar de reiniciar o cluster
