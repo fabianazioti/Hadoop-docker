@@ -10,7 +10,7 @@ points_by_id = ORDER s_points BY id;
 
 result = FOREACH points_by_id GENERATE ST_AsText(point);
 
-STORE lines INTO 'resultadopig/resultspigeondois';
+STORE result INTO 'resultadopig/resultspigeondois';
 
 
 
