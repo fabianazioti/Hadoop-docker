@@ -14,8 +14,18 @@
     </property>
 
     <property>
-	<name>yarn.nodemanager.vmem-check-enabled</name>
-	<value>false</value>
-     </property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+	    <value>false</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.local-dirs</name>
+        <value>file:///root/yarn/local</value>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.log-dirs</name>
+        <value>file:///root/yarn/logs</value>
+    </property>
 
 </configuration>
