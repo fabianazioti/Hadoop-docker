@@ -1,0 +1,6 @@
+#!/bin/bash
+
+PIG_CLUSTER_NAME=pig
+HADOOP_VERSION=2.7.5
+
+docker build --tag $PIG_CLUSTER_NAME:$HADOOP_VERSION .
