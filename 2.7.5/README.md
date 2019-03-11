@@ -1,26 +1,55 @@
-# Install Hadoop Cluster
+# Install SpatialHadoop Cluster
 
 This sample has 3 Nodes: 1 Namenode and 2 Datanode
 
+### Docker-Machine
 
-- Builds Docker image from a Dockerfile.
-   ```sh
-   cd hadoop_cluster_image
-   docker build --tag myhadoop:2.7.5 .
-    ```
-## Instal PIG (Create Pig Image)
-   ```sh
-   cd pig
-   ./start-container.sh
-   ```
+Start docker-machine
 
-## Install SpatialHadoop
-
-- Copy file into containers:
   ```sh
-  ./exspatialhadoop.sh
+    docker-machine create --driver virtualbox spatialhadoop1
+    docker-machine create --driver virtualbox spatialhadoop2
+    docker-machine create --driver virtualbox spatialhadoop3
   ```
 
+Create a swarm and attach all hosts. On the master host (spatialhadoop1) type the following command in the terminal
+
+  ```ssh
+    docker swarm init --advertise-addr <ip>
+  ```
+
+  spatialhadoop1 is now Leader
+
+This command will show the command that you must use in the others hosts (spatialhadoop2 and spatialhadoop3):
+
+  ```ssh
+    docker swarm join --token <token>
+  ```
+
+In order to create the overlay network, type the following command on the spatialhadoop1:
+
+  ```sh
+    docker network create -d overlay --attachable hadoop_net
+  ```
+
+Also you can create volumes:
+
+  ```ssh
+    docker volume create hadoop-data
+  ```
+
+In order to run the SpatialHadoop Instance on spatialhadoop1, type the following command on the spatialhadoop1:
+
+```ssh
+docker run -itd --net=hadoop_net \
+              -p 0.0.0.0:8088:8088 \
+              -p 0.0.0.0:50070:50070 \
+              --name hadoop-master \
+              --hostname hadoop-master \
+              -v hadoop-data:/home/root/hdfs/datanode \
+              -v hadoop-data:/home/root/hdfs/namenode \
+              fzioti/spatialhadoop:2.7.5
+```
 
 ### Usage examples (from spatialhadoop wiki)
 To generate a 1 GB file that contains rectangles, run the command
