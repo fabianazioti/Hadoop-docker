@@ -12,6 +12,7 @@ Start docker-machine
     docker-machine create --driver virtualbox spatialhadoop3
   ```
 
+### Docker-Swarm and Overlay network
 Create a swarm and attach all hosts. On the master host (spatialhadoop1) type the following command in the terminal
 
   ```ssh
@@ -37,19 +38,47 @@ Also you can create volumes:
   ```ssh
     docker volume create hadoop-data
   ```
+### Run container
 
 In order to run the SpatialHadoop Instance on spatialhadoop1, type the following command on the spatialhadoop1:
 
-```ssh
-docker run -itd --net=hadoop_net \
-              -p 0.0.0.0:8088:8088 \
-              -p 0.0.0.0:50070:50070 \
-              --name hadoop-master \
-              --hostname hadoop-master \
-              -v hadoop-data:/home/root/hdfs/datanode \
-              -v hadoop-data:/home/root/hdfs/namenode \
-              fzioti/spatialhadoop:2.7.5
-```
+  ```ssh
+  docker run -itd --net=hadoop_net \
+                -p 0.0.0.0:8088:8088 \
+                -p 0.0.0.0:50070:50070 \
+                --name hadoop-master \
+                --hostname hadoop-master \
+                -v hadoop-data:/home/root/hdfs/datanode \
+                -v hadoop-data:/home/root/hdfs/namenode \
+                fzioti/spatialhadoop:2.7.5
+  ```
+
+In order to run the SpatialHadoop Instance on spatialhadoop2 and spatialhadoop3, type the following command :
+
+  ```ssh
+  docker run -itd --net=hadoop_net \
+                  --name hadoop-slave1 \
+                  --hostname hadoop-slave1 \
+                  -v hadoop-data:/home/root/hdfs/datanode \
+                  fzioti/spatialhadoop:2.7.5
+  ```
+
+  ```ssh
+  docker run -itd --net=hadoop_net \
+                  --name hadoop-slave2 \
+                  --hostname hadoop-slave2 \
+                  -v hadoop-data:/home/root/hdfs/datanode \
+                  fzioti/spatialhadoop:2.7.5
+  ```
+
+## Configure
+
+To start a bash shell on SpatialHadoop Master instance, type the following command on spatialhadoop1 terminal:
+
+  ```sh
+    docker exec -it hadoop-master bash
+    ./start-container.sh
+  ```
 
 ### Usage examples (from spatialhadoop wiki)
 To generate a 1 GB file that contains rectangles, run the command
