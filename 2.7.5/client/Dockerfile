@@ -1,4 +1,4 @@
-FROM pig:2.7.5
+FROM pig-hadoop-cluster:2.7.5
 
 RUN apt-get install -y sudo \
     && sudo apt-get update
